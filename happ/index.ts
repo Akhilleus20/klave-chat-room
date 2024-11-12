@@ -172,7 +172,16 @@ export function createChatRoom(input: ChatRoomSetting): void {
     const tableChatRooms = Ledger.getTable(chatRoomIds);
 
     //create a unique identifier for the chatroom
-    const chatRoomId = encode(convertToUint8Array(Crypto.getRandomValues(64)));
+    const uniqueIdUint8Array = Crypto.getRandomValues(64);
+    if (!uniqueIdUint8Array)
+    {
+        Notifier.sendJson<ErrorOutput>({
+            success: false,
+            exception: "Unique identifier is null"
+        });
+    }
+
+    const chatRoomId = encode(uniqueIdUint8Array!);
 
     //update the chatroom identification
     tableChatRooms.set(chatRoomId, JSON.stringify<ChatRoomSetting>(input));
